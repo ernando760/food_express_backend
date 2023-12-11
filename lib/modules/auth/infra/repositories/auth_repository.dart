@@ -1,5 +1,4 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
-
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:delivery_project_using_clean_code/core/utils/dot_env_util.dart';
 import 'package:delivery_project_using_clean_code/modules/auth/adapter/user_adapter.dart';
@@ -21,13 +20,13 @@ class AuthRepository extends IAuthRepository {
     try {
       await _database.openDatabase();
 
-      final res = await _database
+      final rows = await _database
           .query("SELECT * FROM user_auth WHERE email = @email", {
         "email": userDto.email.value,
       });
 
-      for (var value in res) {
-        final user = UserAdapter.fromJson(value, withPassword: false);
+      for (var row in rows) {
+        final user = UserAdapter.fromJson(row, withPassword: false);
         final token = _generateAccessToken(user);
         return (user: user, token: token, exception: null);
       }

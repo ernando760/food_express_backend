@@ -12,9 +12,11 @@ class VOPassword extends VOText {
     return false;
   }
 
-  String convert() => BCrypt.hashpw(value, BCrypt.gensalt());
+  String convert() =>
+      value.isNotEmpty ? BCrypt.hashpw(value, BCrypt.gensalt()) : "";
 
-  bool checkPassword(String hash) => BCrypt.checkpw(value, hash);
+  bool checkPassword(String hash) =>
+      hash.isNotEmpty ? BCrypt.checkpw(value, hash) : false;
 
   @override
   String toString() => value;

@@ -19,6 +19,6 @@ class UserAdapter {
         "id": withId ? user.id : null,
         "username": user.username.value,
         "email": user.email.value,
-        "password": withPassword ? user.password.convert() : ""
+        "password": withPassword ? user.password.value : ""
       };
 }

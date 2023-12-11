@@ -29,6 +29,9 @@ class UserEntity extends IEntity<String> {
     "password": password.validate(),
   };
 
+  bool validateEmailAndPassword() =>
+      (email.validate() && password.validate()) ? true : false;
+
   @override
   String toString() =>
       "UserEntity(id:$id,username:$username,email:$email,password:$password)";

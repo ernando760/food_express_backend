@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, curly_braces_in_flow_control_structures
 import 'package:delivery_project_using_clean_code/modules/auth/domain/dto/user_dto.dart';
 import 'package:delivery_project_using_clean_code/modules/auth/domain/entities/user_entity.dart';
 import 'package:delivery_project_using_clean_code/modules/auth/domain/errors/i_auth_exception.dart';
@@ -11,7 +11,8 @@ class SignIn {
 
   Future<({UserEntity? user, String token, IAuthException? exception})> call(
       UserDto userDto) async {
-    if (userDto.validate()) return await _authRepository.signIn(userDto);
+    if (userDto.validateEmailAndPassword())
+      return await _authRepository.signIn(userDto);
 
     return (
       user: null,
