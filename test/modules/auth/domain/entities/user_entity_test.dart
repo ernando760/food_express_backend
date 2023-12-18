@@ -13,7 +13,7 @@ void main() {
     final user = UserEntity(
       id: "id",
       username: VOText("username"),
-      email: VOEmail("email"),
+      email: VOEmail("teste@testando.com"),
       password: VOPassword("password"),
     );
 
