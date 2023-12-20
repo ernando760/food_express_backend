@@ -12,7 +12,7 @@ import 'package:shelf_modular/shelf_modular.dart';
 class AuthModule extends Module {
   @override
   List<Bind<Object>> get binds => [
-        Bind<IDatabase>((i) => PostgresDatabase(), isLazy: false),
+        Bind<IDatabase>((i) => PostgresDatabase(), isLazy: false, export: true),
         Bind.singleton<IAuthRepository>((i) => AuthRepository(i<IDatabase>())),
         Bind.singleton<CheckIfUserExists>(
             (i) => CheckIfUserExists(i<IAuthRepository>())),
