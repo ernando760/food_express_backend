@@ -4,7 +4,6 @@ import 'package:delivery_project_using_clean_code/modules/product/infra/reposito
 
 class ProductModulesBinds {
   static List<Bind<Object>> binds = [
-    Bind.singleton<IDatabase>((i) => PostgresDatabase()),
     Bind.singleton<IProductImgRepository>((i) => ProductImgRepository()),
     Bind.singleton<IProductRepository>(
         (i) => ProductRepository(i<IDatabase>(), i<IProductImgRepository>())),
