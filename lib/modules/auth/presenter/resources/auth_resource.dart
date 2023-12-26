@@ -7,8 +7,8 @@ import 'package:shelf_modular/shelf_modular.dart';
 class AuthResource extends Resource {
   @override
   List<Route> get routes => [
-        Route.post("/auth/signin", _signIn),
-        Route.post("/auth/signup", _signUp),
+        Route.post("/signin", _signIn),
+        Route.post("/signup", _signUp),
       ];
   FutureOr<Response> _signIn(
       ModularArguments arguments, Injector i, Request request) async {
