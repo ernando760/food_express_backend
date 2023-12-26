@@ -46,16 +46,13 @@ class AuthController {
     if (res.isExistsUser == true && res.exception != null) {
       return Response(401).json({
         "message": res.exception?.messageError,
-        "label": res.exception?.label
       });
     }
 
     final (:user, :token, :exception) = await _signUp.call(userDto);
     if (exception != null) {
       return Response(401).json({
-        "messageError": exception.messageError,
-        "label": exception.label,
-        "stackTrace": exception.stackTrace
+        "message": exception.messageError,
       });
     }
     return Response(200)
