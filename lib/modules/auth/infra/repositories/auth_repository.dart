@@ -62,7 +62,7 @@ class AuthRepository extends IAuthRepository {
         token: '',
         exception: InvalidSignUpException(
             messageError: e.messageError,
-            label: "$runtimeType-signUp => ${e.label}",
+            label: "$runtimeType-signIn => ${e.label}",
             stackTrace: e.stackTrace)
       );
     } catch (e, s) {
@@ -70,7 +70,7 @@ class AuthRepository extends IAuthRepository {
         user: null,
         token: '',
         exception: InvalidSignInException(
-            messageError: "Error ao fazer o login",
+            messageError: "Error ao fazer o login $e",
             label: "$runtimeType-signIn",
             stackTrace: s)
       );
@@ -88,7 +88,8 @@ class AuthRepository extends IAuthRepository {
       final futures = await Future.value([
         await _database.execute(
             "INSERT INTO user_auth(username,email,password) VALUES(@username,@email,@password)",
-            UserAdapter.toMap(userDto, withId: false)),
+            UserAdapter.toMap(userDto,
+                withId: false, withPasswordConvert: true)),
         await _database.query("SELECT * FROM user_auth WHERE email = @email",
             {"email": userDto.email.value})
       ]);
@@ -159,6 +160,8 @@ class AuthRepository extends IAuthRepository {
         "email": userDto.email.value,
       });
 
+      print("QUERY: $rows");
+
       if (rows.isNotEmpty) {
         final isValidPassword =
             userDto.password.checkPassword(rows[0]["password"]);
@@ -195,7 +198,7 @@ class AuthRepository extends IAuthRepository {
       return (
         isExistsUser: false,
         exception: ExistingUserException(
-            messageError: "Error ao verificar se o usuario existe",
+            messageError: "Error ao verificar se o usuario existe $e",
             label: "$runtimeType-ckeckIfTheUserExists",
             stackTrace: s)
       );
@@ -207,14 +210,34 @@ class AuthRepository extends IAuthRepository {
   @override
   Future<void> signOut() async {}
 
+  bool checkTokenIsValid(String token) {
+    final jwtD = JWT.decode(token);
+    DateTime expirationDate =
+        DateTime.fromMillisecondsSinceEpoch(jwtD.payload['exp'] * 1000);
+    print("EXPIRATION DATE: $expirationDate");
+    if (expirationDate.isAfter(DateTime.now())) {
+      return true;
+    }
+    return false;
+  }
+
   String _generateAccessToken(UserEntity user) {
     try {
-      final date = DateTime.now().microsecondsSinceEpoch;
+      DateTime currentDate = DateTime.now();
+      final iatTimestamp = currentDate.millisecondsSinceEpoch;
+
       final secretkey = SecretKey(DotEnvUtil.env["SECRET_KEY"]!);
-      final jwt = JWT(
-          {'sub': user.id, 'name': user.username.value, 'iat': date},
-          header: {"alg": "HS256", "typ": "JWT"});
-      final token = jwt.sign(secretkey);
+      final duration = Duration(days: 1);
+
+      final jwt = JWT({
+        'sub': user.id,
+        'name': user.username.value,
+        'iat': iatTimestamp,
+      }, header: {
+        "alg": "HS256",
+        "typ": "JWT"
+      });
+      final token = jwt.sign(secretkey, expiresIn: duration);
 
       return token;
     } on JWTException catch (e, s) {
