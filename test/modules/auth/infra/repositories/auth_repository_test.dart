@@ -12,6 +12,9 @@ import 'package:test/test.dart';
 class MockDatabase extends Mock implements IDatabase {
   @override
   Future<void> openDatabase() async {}
+
+  @override
+  Future<int> execute(String path, [values]) async => 0;
 }
 
 void main() {
@@ -24,7 +27,7 @@ void main() {
     repository = AuthRepository(database);
   });
 
-  tearDownAll(() {
+  tearDown(() {
     reset(MockDatabase());
   });
   group("Testing [signIn] method", () {
@@ -98,9 +101,7 @@ void main() {
       expect(token, "");
       expect(exception?.messageError, "Error ao fazer o cadastro");
 
-      verify(
-        () => database.query(any(), any()),
-      ).called(1);
+      verify(() => database.query(any(), any())).called(1);
     });
   });
 
