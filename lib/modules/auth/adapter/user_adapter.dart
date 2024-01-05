@@ -14,11 +14,17 @@ class UserAdapter {
               withPassword ? VOPassword(data["password"]) : VOPassword(""));
 
   static Map<String, dynamic> toMap(UserEntity user,
-          {bool withPassword = true, bool withId = true}) =>
+          {bool withPassword = true,
+          bool withId = true,
+          bool withPasswordConvert = false}) =>
       {
         "id": withId ? user.id : null,
         "username": user.username.value,
         "email": user.email.value,
-        "password": withPassword ? user.password.value : ""
+        "password": withPassword
+            ? withPasswordConvert
+                ? user.password.convert()
+                : user.password.value
+            : ""
       };
 }
