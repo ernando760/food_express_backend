@@ -107,7 +107,7 @@ class AuthRepository extends IAuthRepository {
         user: null,
         token: '',
         exception: InvalidSignUpException(
-            messageError: "error ao fazer o cadastro",
+            messageError: "Error ao fazer o cadastro",
             label: "$runtimeType-signUp")
       );
     } on OpenDatabaseException catch (e) {
@@ -140,7 +140,7 @@ class AuthRepository extends IAuthRepository {
         user: null,
         token: '',
         exception: InvalidSignUpException(
-            messageError: "Error ao fazer o cadastro",
+            messageError: "Error ao fazer o cadastro: $e",
             label: "$runtimeType-signUp",
             stackTrace: s)
       );

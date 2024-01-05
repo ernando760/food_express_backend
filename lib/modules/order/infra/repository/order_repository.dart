@@ -65,12 +65,13 @@ class OrderRepository extends IOrderRepository {
             messageError: e.messageError,
             label: "$runtimeType-addOrder -> ${e.label}")
       );
-    } catch (e) {
+    } catch (e, s) {
       return (
         message: null,
         exception: OrderUnknowException(
-            messageError: "Error ao adicionar o perdido",
-            label: "$runtimeType-addOrder")
+            messageError: "Error ao adicionar o perdido: $e",
+            label: "$runtimeType-addOrder",
+            stackTrace: s)
       );
     } finally {
       _database.closeDatabase();
@@ -107,12 +108,13 @@ class OrderRepository extends IOrderRepository {
             messageError: e.messageError,
             label: "$runtimeType-cancelOrder -> ${e.label}")
       );
-    } catch (e) {
+    } catch (e, s) {
       return (
         message: null,
         exception: OrderUnknowException(
-            messageError: "Error ao cancelar o perdido",
-            label: "$runtimeType-cancelOrder")
+            messageError: "Error ao cancelar o perdido: $e",
+            label: "$runtimeType-cancelOrder",
+            stackTrace: s)
       );
     } finally {
       _database.closeDatabase();

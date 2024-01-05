@@ -49,8 +49,8 @@ class ProductRepository extends IProductRepository {
     } catch (e, s) {
       return (
         message: null,
-        exception: CreateProductException(
-            messageError: "Error ao criar o produto",
+        exception: ProductUnknowException(
+            messageError: "Error ao criar o produto: $e",
             label: "$runtimeType-createProduct",
             stackTrace: s)
       );
@@ -69,12 +69,15 @@ class ProductRepository extends IProductRepository {
             .query("SELECT img_url FROM product WHERE id = @id", {"id": id}),
         await _database.query("DELETE FROM product WHERE id = @id", {"id": id})
       ]);
+      if (futures[0].isNotEmpty) {
+        final productImgPath = futures[0][0]["img_url"];
 
-      final productImgPath = futures[0][0]["img_url"];
+        await _imgRepository.deleteProductImg(".$productImgPath");
 
-      await _imgRepository.deleteProductImg(".$productImgPath");
+        return (message: "O produto $id foi deletado", exception: null);
+      }
 
-      return (message: "O produto $id foi deletado", exception: null);
+      return (message: "O produto $id não foi encontrado", exception: null);
     } on OpenDatabaseException catch (e) {
       return (
         message: null,
@@ -92,8 +95,8 @@ class ProductRepository extends IProductRepository {
     } catch (e, s) {
       return (
         message: null,
-        exception: DeleteProductException(
-            messageError: "Error ao deletar o produto",
+        exception: ProductUnknowException(
+            messageError: "Error ao deletar o produto: $e",
             label: "$runtimeType-deleteProduct",
             stackTrace: s)
       );
@@ -135,7 +138,7 @@ class ProductRepository extends IProductRepository {
       return (
         products: null,
         exception: ProductUnknowException(
-            messageError: "Error ao obter os produtos",
+            messageError: "Error ao obter os produtos: $e",
             label: "$runtimeType-getAllProducts",
             stackTrace: s)
       );
@@ -166,14 +169,14 @@ class ProductRepository extends IProductRepository {
     } on OpenDatabaseException catch (e) {
       return (
         product: null,
-        exception: GetAllProductsException(
+        exception: GetProductByIdException(
             messageError: e.messageError,
             label: "$runtimeType-getProductById -> ${e.label}")
       );
     } on QueryDatabaseException catch (e) {
       return (
         product: null,
-        exception: GetAllProductsException(
+        exception: GetProductByIdException(
             messageError: e.messageError,
             label: "$runtimeType-getProductById -> ${e.label}")
       );
@@ -181,7 +184,7 @@ class ProductRepository extends IProductRepository {
       return (
         product: null,
         exception: ProductUnknowException(
-            messageError: "Error ao obter o produto",
+            messageError: "Error ao obter o produto: $e",
             label: "$runtimeType-getProductById",
             stackTrace: s)
       );
@@ -197,24 +200,28 @@ class ProductRepository extends IProductRepository {
       await _database.openDatabase();
       final rows = await _database
           .query("SELECT img_url FROM product WHERE id = @id", {"id": id});
-      final productImgPath = rows[0]["img_url"];
-      print(productImgPath);
-      final newProductImgPath = await _imgRepository.updateProductImg(
-          productId: id,
-          imgUrl: newProductDto.imgUrl,
-          newImageName: newProductDto.name,
-          oldImageUrl: productImgPath);
-      await _database.query(
-          "UPDATE product SET name = @name, description = @description, img_url = @img_url, price = @price WHERE id = @id",
-          {
-            "id": id,
-            "name": newProductDto.name,
-            "description": newProductDto.description,
-            "img_url": newProductImgPath,
-            "price": newProductDto.price
-          });
 
-      return (message: "O produto $id foi atualizado", exception: null);
+      if (rows.isNotEmpty) {
+        final productImgPath = rows[0]["img_url"];
+        final newProductImgPath = await _imgRepository.updateProductImg(
+            productId: id,
+            imgUrl: newProductDto.imgUrl,
+            newImageName: newProductDto.name,
+            oldImageUrl: productImgPath);
+        await _database.query(
+            "UPDATE product SET name = @name, description = @description, img_url = @img_url, price = @price WHERE id = @id",
+            {
+              "id": id,
+              "name": newProductDto.name,
+              "description": newProductDto.description,
+              "img_url": newProductImgPath,
+              "price": newProductDto.price
+            });
+
+        return (message: "O produto $id foi atualizado", exception: null);
+      }
+
+      return (message: "O produto $id não foi encotrado", exception: null);
     } on OpenDatabaseException catch (e) {
       return (
         message: null,
@@ -233,7 +240,7 @@ class ProductRepository extends IProductRepository {
       return (
         message: null,
         exception: ProductUnknowException(
-            messageError: "Error ao atualizar o produto",
+            messageError: "Error ao atualizar o produto: $e",
             label: "$runtimeType-updateProduct",
             stackTrace: s)
       );
