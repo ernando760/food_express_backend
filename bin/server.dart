@@ -1,5 +1,5 @@
-import 'package:delivery_project_using_clean_code/core/utils/dot_env_util.dart';
-import 'package:delivery_project_using_clean_code/modules/app_module.dart';
+import 'package:delivery_project_using_clean_code/src/core/utils/dot_env_util.dart';
+import 'package:delivery_project_using_clean_code/src/modules/app_module.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_modular/shelf_modular.dart';
