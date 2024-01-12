@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "dart run orm"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id       String @id @default(uuid()) @db.Uuid
+  username String
+  email    String @unique
+  password String
+}
+
+model product {
+  id               String            @id @default(uuid()) @db.Uuid
+  name             String
+  description      String
+  img_url          String
+  price            Int
+  product_comments product_comment[]
+}
+
+model product_comment {
+  id        String   @id @default(uuid()) @db.Uuid
+  product   product  @relation(fields: [productId], references: [id])
+  productId String   @db.Uuid
+  username  String
+  ratings   Float
+  email     String   @unique
+  comment   String
+  created   DateTime @db.Date
+}
+
+model customer_order {
+  id            Int           @id @default(autoincrement())
+  customer_name String
+  status        String
+  address       address[]
+  totalPrice    Int
+  created       DateTime      @db.Date
+  orderItems    order_items[]
+}
+
+model address {
+  street            String
+  district          String
+  number            Int
+  city              String
+  customer_order_id Int            @unique
+  customer_order    customer_order @relation(fields: [customer_order_id], references: [id])
+}
+
+model order_items {
+  customerOrder     customer_order @relation(fields: [customer_order_id], references: [id])
+  customer_order_id Int            @unique
+  amount            Int
+  price             Int
+}
