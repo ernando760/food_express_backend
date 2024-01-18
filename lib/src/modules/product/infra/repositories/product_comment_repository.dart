@@ -26,7 +26,7 @@ class ProductCommentRepository extends IProductCommentRepository {
                   connect: ProductWhereUniqueInput(id: commentDto.productId))));
 
       return (
-        message: "O produto ${commentDto.id} foi criado",
+        message: "O comentario do produto ${commentDto.productId} foi criado",
         exception: null
       );
     } on PrismaException catch (e, s) {
@@ -71,6 +71,7 @@ class ProductCommentRepository extends IProductCommentRepository {
               username: e.username,
               email: e.email,
               comment: e.comment,
+              ratings: e.ratings,
               created: e.created))
           .toList();
 
