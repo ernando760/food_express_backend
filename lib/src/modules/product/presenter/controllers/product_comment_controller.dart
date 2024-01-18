@@ -40,7 +40,7 @@ class ProductCommentController {
         ProductCommentDto(
             email: data["email"],
             productId: productId,
-            ratings: (data["ratings"] as int).toDouble(),
+            ratings: (data["ratings"] as num).toDouble(),
             username: data["username"],
             comment: data["comment"]));
 
