@@ -1,5 +1,6 @@
 {
     "functions": {
-      "api/**/*.dart": { "runtime": "../vercel-dart@1.1.0" }
+    "bin/*.dart": {"runtime": "../vercel-dart@1.1.0"},
+    "lib/src/**/*.dart": { "runtime": "../vercel-dart@1.1.0" }
     }
   }
